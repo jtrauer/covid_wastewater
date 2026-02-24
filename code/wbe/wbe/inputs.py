@@ -76,6 +76,6 @@ def group_data(
             n_raw_rows=(f"{sample_type}_pcr_conc", "size"),
         )
     ).sort_values(group_vars)
-    grouped_obs.index = pd.to_datetime(grouped_obs["sample_collect_date"])
+    grouped_obs.index = grouped_obs["sample_collect_date"]
     cols = [c for c in grouped_obs.columns if c != "sample_collect_date"]
     return grouped_obs[cols]
