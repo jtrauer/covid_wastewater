@@ -4,6 +4,7 @@ from wbe.constants import DATA_PATH, GROUP_VARS
 
 
 def get_cdc_wbe_data():
+    """Download and store CDC WBE data."""
     url = "https://data.cdc.gov/api/views/j9g8-acpt/rows.csv?accessType=DOWNLOAD"
     data = pd.read_csv(url, index_col="sample_collect_date")
     data.index = pd.to_datetime(data.index)
