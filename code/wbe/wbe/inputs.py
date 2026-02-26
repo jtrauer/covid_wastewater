@@ -25,7 +25,6 @@ def get_cdc_wbe_data():
     data.index = pd.to_datetime(data.index)
     data = data.sort_index()
     outdir = DATA_PATH / "wbe"
-    DATA_PATH.mkdir(exist_ok=True)
     outdir.mkdir(exist_ok=True)
     ts, commit_id = get_storage_metadata()
     filename = f"cdc_data_d{ts}_sha{commit_id}.csv"
@@ -48,11 +47,9 @@ def get_jhu_surveillance_data(
     data = pd.read_csv(url, dtype={"UID": str})
     data.index = data["UID"]
     date_cols = [c for c in data.columns if c.count("/") == 2]
-    data = data[date_cols]
-    data = data.T
+    data = data[date_cols].T
     data.index = pd.to_datetime(data.index, format="%m/%d/%y")
     outdir = DATA_PATH / "jhu"
-    DATA_PATH.mkdir(exist_ok=True)
     outdir.mkdir(exist_ok=True)
     ts, commit_id = get_storage_metadata()
     filename = f"jhu_{ind}_d{ts}_sha{commit_id}.csv"
