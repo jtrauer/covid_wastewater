@@ -72,6 +72,29 @@ def get_jhu_lookup():
     lookup.to_csv(outdir / filename)
 
 
+def get_jhu_county_data(
+    data_filename: str,
+) -> pd.DataFrame:
+    """Get JHU surveillance data with UIDs mapped to FIPS
+    and UIDs with no FIPS mapping dropped.
+
+    Args:
+        data_filename: Name of the file containing the data (cases or deaths)
+
+    Returns:
+        The mapped, filtered data
+    """
+    lookup_filename = "fips_lookup_d20260226_t204115_sha8b5688e.csv"
+    lookup_path = DATA_PATH / "jhu" / lookup_filename
+    lookup = pd.read_csv(lookup_path, index_col=0)["FIPS"].astype(str).str.zfill(5)
+    lookup.index = lookup.index.astype(str)
+
+    data = pd.read_csv(DATA_PATH / "jhu" / data_filename, index_col=0)
+    data.index = pd.to_datetime(data.index)
+    data.columns = data.columns.map(lookup)
+    return data.loc[:, ~data.columns.isna()]
+
+
 def split_concentration_var(
     data: pd.DataFrame,
 ) -> pd.DataFrame:
