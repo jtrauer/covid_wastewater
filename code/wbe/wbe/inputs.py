@@ -1,8 +1,21 @@
+from typing import Tuple
 import git
 from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
 from wbe.constants import DATA_PATH, GROUP_VARS
+
+
+def get_storage_metadata() -> Tuple[str]:
+    """Get the standard metadata for inclusion in data filenames.
+
+    Returns:
+        Time stamp and short commit ID as strings
+    """
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d_t%H%M%S")
+    repo = git.Repo(search_parent_directories=True)
+    commit_id = repo.git.rev_parse("--short", "HEAD")
+    return ts, commit_id
 
 
 def get_cdc_wbe_data():
@@ -14,9 +27,7 @@ def get_cdc_wbe_data():
     outdir = DATA_PATH / "wbe"
     DATA_PATH.mkdir(exist_ok=True)
     outdir.mkdir(exist_ok=True)
-    repo = git.Repo(search_parent_directories=True)
-    commit_id = repo.git.rev_parse("--short", "HEAD")
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d_t%H%M%S")
+    ts, commit_id = get_storage_metadata()
     filename = f"cdc_data_d{ts}_sha{commit_id}.csv"
     data.to_csv(outdir / filename)
 
@@ -43,9 +54,7 @@ def get_jhu_surveillance_data(
     outdir = DATA_PATH / "jhu"
     DATA_PATH.mkdir(exist_ok=True)
     outdir.mkdir(exist_ok=True)
-    repo = git.Repo(search_parent_directories=True)
-    commit_id = repo.git.rev_parse("--short", "HEAD")
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d_t%H%M%S")
+    ts, commit_id = get_storage_metadata()
     filename = f"jhu_{ind}_d{ts}_sha{commit_id}.csv"
     data.to_csv(outdir / filename)
 
